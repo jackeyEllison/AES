@@ -1,0 +1,163 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+from Crypto.Cipher import AES
+from Crypto.Util.Padding import pad, unpad
+from Crypto.Random import get_random_bytes
+
+# ECB模式
+def aes_ecb_encrypt(key, plaintext):
+    cipher = AES.new(key, AES.MODE_ECB)
+    ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
+    return ciphertext
+
+def aes_ecb_decrypt(key, ciphertext):
+    cipher = AES.new(key, AES.MODE_ECB)
+    plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
+    return plaintext
+
+# CBC模式
+def aes_cbc_encrypt(key, iv, plaintext):
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    ciphertext = cipher.encrypt(pad(plaintext, AES.block_size))
+    return ciphertext
+
+def aes_cbc_decrypt(key, iv, ciphertext):
+    cipher = AES.new(key, AES.MODE_CBC, iv)
+    plaintext = unpad(cipher.decrypt(ciphertext), AES.block_size)
+    return plaintext
+
+# CFB模式
+def aes_cfb_encrypt(key, iv, plaintext):
+    cipher = AES.new(key, AES.MODE_CFB, iv, segment_size=128)
+    ciphertext = cipher.encrypt(plaintext)
+    return ciphertext
+
+def aes_cfb_decrypt(key, iv, ciphertext):
+    cipher = AES.new(key, AES.MODE_CFB, iv, segment_size=128)
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext
+
+# OFB模式
+def aes_ofb_encrypt(key, iv, plaintext):
+    cipher = AES.new(key, AES.MODE_OFB, iv)
+    ciphertext = cipher.encrypt(plaintext)
+    return ciphertext
+
+def aes_ofb_decrypt(key, iv, ciphertext):
+    cipher = AES.new(key, AES.MODE_OFB, iv)
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext
+
+# CTR模式
+def aes_ctr_encrypt(key, nonce, plaintext):
+    cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+    ciphertext = cipher.encrypt(plaintext)
+    return ciphertext
+
+def aes_ctr_decrypt(key, nonce, ciphertext):
+    cipher = AES.new(key, AES.MODE_CTR, nonce=nonce)
+    plaintext = cipher.decrypt(ciphertext)
+    return plaintext
+
+# 数据分析
+def analyze_data(data, title):
+    data_len = len(data)
+    unique_bytes = len(np.unique(data))
+    byte_counts = pd.Series(list(data)).value_counts(normalize=True)
+    
+    # 绘制柱状图
+    plt.figure(figsize=(8, 6))
+    byte_counts.plot(kind='bar')
+    plt.xlabel('Byte')
+    plt.ylabel('Frequency')
+    plt.title(title + ' Byte Frequency Distribution')
+    plt.show()
+
+    print("Data Analysis:", title)
+    print("Data Length:", data_len)
+    print("Unique Bytes:", unique_bytes)
+    print("Byte Counts:")
+    print(byte_counts)
+
+# 示例用法
+def main():
+    key = get_random_bytes(16)
+    iv = get_random_bytes(16)
+    nonce = get_random_bytes(16)
+    plaintext = b'This is a test message.'
+
+    # ECB模式示例
+    ciphertext = aes_ecb_encrypt(key, plaintext)
+    decrypted_text = aes_ecb_decrypt(key, ciphertext)
+
+    print("ECB Mode:")
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+    print("Decrypted text:", decrypted_text)
+
+    # 分析加密和解密数据
+    analyze_data(plaintext, "ECB Mode - Plaintext")
+    analyze_data(ciphertext, "ECB Mode - Ciphertext")
+    analyze_data(decrypted_text, "ECB Mode - Decrypted Text")
+
+    # CBC模式示例
+    ciphertext = aes_cbc_encrypt(key, iv, plaintext)
+    decrypted_text = aes_cbc_decrypt(key, iv, ciphertext)
+
+    print("\nCBC Mode:")
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+    print("Decrypted text:", decrypted_text)
+
+    # 分析加密和解密数据
+    analyze_data(plaintext, "CBC Mode - Plaintext")
+    analyze_data(ciphertext, "CBC Mode - Ciphertext")
+    analyze_data(decrypted_text, "CBC Mode - Decrypted Text")
+
+    # CFB模式示例
+    ciphertext = aes_cfb_encrypt(key, iv, plaintext)
+    decrypted_text = aes_cfb_decrypt(key, iv, ciphertext)
+
+    print("\nCFB Mode:")
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+    print("Decrypted text:", decrypted_text)
+
+    # 分析加密和解密数据
+    analyze_data(plaintext, "CFB Mode - Plaintext")
+    analyze_data(ciphertext, "CFB Mode - Ciphertext")
+	analyze_data(decrypted_text, "CFB Mode - Decrypted Text")
+	
+	
+    # OFB模式示例
+    ciphertext = aes_cfb_encrypt(key, iv, plaintext)
+    decrypted_text = aes_cfb_decrypt(key, iv, ciphertext)
+
+    print("\nOFB Mode:")
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+    print("Decrypted text:", decrypted_text)
+
+    # 分析加密和解密数据
+    analyze_data(plaintext, "OFB Mode - Plaintext")
+    analyze_data(ciphertext, "OFB Mode - Ciphertext")
+	analyze_data(decrypted_text, "OFB Mode - Decrypted Text")
+
+
+    # CTR模式示例
+    ciphertext = aes_cfb_encrypt(key, iv, plaintext)
+    decrypted_text = aes_cfb_decrypt(key, iv, ciphertext)
+
+    print("\nCTR Mode:")
+    print("Plaintext:", plaintext)
+    print("Ciphertext:", ciphertext)
+    print("Decrypted text:", decrypted_text)
+
+    # 分析加密和解密数据
+    analyze_data(plaintext, "CTR Mode - Plaintext")
+    analyze_data(ciphertext, "CTR Mode - Ciphertext")
+	analyze_data(decrypted_text, "CTR Mode - Decrypted Text")
+
+if __name__ == '__main__':
+    main()	
